@@ -1,12 +1,8 @@
 package tddmicroexercises.leaderboard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class Leaderboard {
 
@@ -18,18 +14,24 @@ public class Leaderboard {
 
     public Map<String, Integer> driverResults() {
         Map<String, Integer> results = new HashMap<>();
-        for (Race race : this.races) {
-            for (Driver driver : race.getResults()) {
-                String driverName = race.getDriverName(driver);
-                int points = race.getPoints(driver);
-                if (results.containsKey(driverName)) {
-                    results.put(driverName, results.get(driverName) + points);
-                } else {
-                    results.put(driverName, 0 + points);
-                }
-            }
+        List<Entry<String, Integer>> raceResult = getRaceResults();
+        //encapsulation
+        for (Entry<String, Integer> driver : raceResult) {
+            String driverName = driver.getKey();
+            int points = driver.getValue();
+            results.putIfAbsent(driverName, 0);
+            results.put(driverName, results.get(driverName) + points);
         }
         return results;
+    }
+
+    protected List<Entry<String, Integer>> getRaceResults() {
+        List<Entry<String, Integer>> raceResult = this.races.stream()
+                .flatMap((race -> race.results()
+                        .entrySet()
+                        .stream()))
+                .collect(Collectors.toList());
+        return raceResult;
     }
 
     public List<String> driverRankings() {
@@ -48,7 +50,8 @@ public class Leaderboard {
 
         @Override
         public int compare(String driverName1, String driverName2) {
-            return -results.get(driverName1).compareTo(results.get(driverName2));
+            return -results.get(driverName1)
+                    .compareTo(results.get(driverName2));
         }
     }
 

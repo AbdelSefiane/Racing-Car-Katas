@@ -1,6 +1,6 @@
 package tddmicroexercises.leaderboard;
 
-public class Driver {
+public class Driver implements Racer{
 
     private final String name;
     private final String country;
@@ -10,12 +10,9 @@ public class Driver {
         this.country = country;
     }
 
+    @Override
     public String getName() {
-        return name;
-    }
-
-    public String getCountry() {
-        return country;
+        return this.name;
     }
 
     @Override
@@ -34,4 +31,5 @@ public class Driver {
         Driver other = (Driver) obj;
         return this.name.equals(other.name) && this.country.equals(other.country);
     }
+
 }
